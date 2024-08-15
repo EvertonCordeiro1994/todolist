@@ -1,7 +1,3 @@
-Aqui está a documentação para o código fornecido, seguindo o formato direto e claro que você preferiu:
-
----
-
 # Lista de Tarefas
 
 Este código cria uma aplicação simples de lista de tarefas usando jQuery e Tailwind CSS. A aplicação permite adicionar e remover tarefas.
