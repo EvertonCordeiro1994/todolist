@@ -3,7 +3,7 @@ $(document).ready(function () {
         .addClass('flex flex-col items-center w-full max-w-md mx-auto')
 
     const $header = $('<div></div>')
-        .addClass('flex items-center gap-x-4')
+        .addClass('flex items-center gap-x-4 ')
 
     const $title = $('<h1></h1>')
         .text('Lista de Tarefas')
@@ -31,13 +31,13 @@ $(document).ready(function () {
     $app.append($header.append($title, $themeButton))
 
     const $inputDiv = $('<div></div>')
-        .addClass('flex gap-2 mb-4')
+        .addClass('flex  flex-col  md:flex-row gap-2 mb-4')
 
     const $taskInput = $('<input>')
         .attr('id', 'task-input')
         .attr('type', 'text')
         .attr('placeholder', 'Digite sua tarefa')
-        .addClass('border border-gray-300 rounded px-4 py-2 bg-transparent')
+        .addClass('border border-gray-300 rounded px-4 py-2 bg-transparent ')
 
     const $addButton = $('<button></button>')
         .attr('id', 'add-task')
