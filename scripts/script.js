@@ -13,7 +13,7 @@ $(document).ready(function () {
         .addClass('p-2 text-blue-500')
         .html('<i id="themeButton" class="fa-solid fa-moon w-6 h-6"></i>')
         .attr('title', 'trocar para modo escuro')
-        .on('click', function () {
+        .on('click', () => {
             const $icon = $('#themeButton')
             if ($icon.hasClass('fa-moon')) {
                 $icon.removeClass('fa-moon').addClass('fa-sun').css('color', 'yellow')
@@ -28,8 +28,7 @@ $(document).ready(function () {
             }
         })
 
-    $header.append($title, $themeButton)
-    $app.append($header)
+    $app.append($header.append($title, $themeButton))
 
     const $inputDiv = $('<div></div>')
         .addClass('flex gap-2 mb-4')
@@ -45,40 +44,34 @@ $(document).ready(function () {
         .text('Adicionar Tarefa')
         .addClass('bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600')
 
-    $inputDiv.append($taskInput, $addButton)
-    $app.append($inputDiv)
+    $app.append($inputDiv.append($taskInput, $addButton))
 
     const $taskList = $('<ul></ul>')
         .attr('id', 'task-list')
         .addClass('w-full bg-transparent')
 
-    $app.append($taskList)
-    $('body').append($app)
+    $('body').append($app.append($taskList))
 
-    function addTask(taskText, isCompleted = false) {
+    const  addTask = (taskText, isCompleted = false) => {
         const $listItem = $('<li></li>')
             .addClass('flex justify-between items-center border border-gray-300 rounded p-2 mb-2 bg-transparent')
 
         const $taskDiv = $('<div></div>')
-            .addClass('text-lg bg-transparent w-3/4 overflow-hidden text-ellipsis whitespace-nowrap')
+            .addClass('text-lg bg-transparent w-3/4 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer')
             .text(taskText)
             .on('click', () => $taskDiv.toggleClass('line-through'))
-            .css('cursor', 'pointer')
 
-        if (isCompleted) {
-            $taskDiv.addClass('line-through')
-        }
+        isCompleted && $taskDiv.addClass('line-through')
 
         const $deleteButton = $('<button></button>')
             .html('<i class="fa-solid fa-trash-can" style="color: #ff1900; width: 1.5em; height: 1.5em;"></i>')
             .addClass('px-3 py-1 rounded')
-            .on('click', function () {
+            .on('click', () => {
                 $listItem.remove()
                 saveTasks() 
             })
 
-        $listItem.append($taskDiv, $deleteButton)
-        $('#task-list').append($listItem)
+        $('#task-list').append($listItem.append($taskDiv, $deleteButton))
     }
 
     function saveTasks() {
@@ -96,12 +89,10 @@ $(document).ready(function () {
         tasks.forEach(task => addTask(task.text, task.isCompleted))
     }
 
-    function saveTheme(theme) {
-        localStorage.setItem('theme', theme)
-    }
+    const  saveTheme = (theme) => localStorage.setItem('theme', theme)
 
     function loadTheme() {
-        const theme = localStorage.getItem('theme') || 'light'
+        const theme = localStorage.getItem('theme') || 'dark'
         const $icon = $('#themeButton')
         if (theme === 'dark') {
             $icon.removeClass('fa-moon').addClass('fa-sun').css('color', 'yellow')
@@ -135,9 +126,6 @@ $(document).ready(function () {
         }
     })
 
-    loadTasks()
-    loadTheme()
-
     const $footer = $('<footer></footer>')
         .addClass('text-center')
 
@@ -145,6 +133,8 @@ $(document).ready(function () {
         .text('CODE BY ÉVERTON CORDEIRO')
         .addClass('text-center text-1xl text-blue-300 text-opacity-4')
 
-    $footer.append($textFooter)
-    $('body').append($footer)
+    $('body').append($footer.append($textFooter))
+    
+    loadTasks()
+    loadTheme()
 })
