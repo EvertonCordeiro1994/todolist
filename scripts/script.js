@@ -19,10 +19,12 @@ $(document).ready(function () {
                 $icon.removeClass('fa-moon').addClass('fa-sun').css('color', 'yellow')
                 $('body').addClass('bg-neutral-800 text-white').removeClass('bg-slate-100 text-black')
                 $themeButton.attr('title', 'trocar para modo claro')
+                saveTheme('dark')
             } else {
                 $icon.removeClass('fa-sun').addClass('fa-moon').css('color', 'blue')
                 $('body').addClass('bg-slate-100 text-black').removeClass('bg-neutral-800 text-white')
                 $themeButton.attr('title', 'trocar para modo escuro')
+                saveTheme('light')
             }
         })
 
@@ -53,37 +55,88 @@ $(document).ready(function () {
     $app.append($taskList)
     $('body').append($app)
 
-    function addTask() {
-        const taskText = $('#task-input').val().trim()
-        if (taskText) {
-            const $listItem = $('<li></li>')
-                .addClass('flex justify-between items-center border border-gray-300 rounded p-2 mb-2 bg-transparent')
+    function addTask(taskText, isCompleted = false) {
+        const $listItem = $('<li></li>')
+            .addClass('flex justify-between items-center border border-gray-300 rounded p-2 mb-2 bg-transparent')
 
-            const $taskDiv = $('<div></div>')
-                .addClass('text-lg bg-transparent w-3/4 overflow-hidden text-ellipsis whitespace-nowrap')
-                .text(taskText)
-                .on('click', () => $taskDiv.toggleClass('line-through'))
-                .css('cursor', 'pointer')
+        const $taskDiv = $('<div></div>')
+            .addClass('text-lg bg-transparent w-3/4 overflow-hidden text-ellipsis whitespace-nowrap')
+            .text(taskText)
+            .on('click', () => $taskDiv.toggleClass('line-through'))
+            .css('cursor', 'pointer')
 
-            const $deleteButton = $('<button></button>')
-                .html('<i class="fa-solid fa-trash-can" style="color: #ff1900; width: 1.5em; height: 1.5em;"></i>')
-                .addClass('px-3 py-1 rounded')
-                .on('click', () => $listItem.remove())
+        if (isCompleted) {
+            $taskDiv.addClass('line-through')
+        }
 
-            $listItem.append($taskDiv, $deleteButton)
-            $('#task-list').append($listItem)
-            $('#task-input').val('')
+        const $deleteButton = $('<button></button>')
+            .html('<i class="fa-solid fa-trash-can" style="color: #ff1900; width: 1.5em; height: 1.5em;"></i>')
+            .addClass('px-3 py-1 rounded')
+            .on('click', function () {
+                $listItem.remove()
+                saveTasks() 
+            })
+
+        $listItem.append($taskDiv, $deleteButton)
+        $('#task-list').append($listItem)
+    }
+
+    function saveTasks() {
+        const tasks = []
+        $('#task-list li').each(function () {
+            const text = $(this).find('div').text()
+            const isCompleted = $(this).find('div').hasClass('line-through')
+            tasks.push({ text, isCompleted })
+        })
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+    }
+
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || []
+        tasks.forEach(task => addTask(task.text, task.isCompleted))
+    }
+
+    function saveTheme(theme) {
+        localStorage.setItem('theme', theme)
+    }
+
+    function loadTheme() {
+        const theme = localStorage.getItem('theme') || 'light'
+        const $icon = $('#themeButton')
+        if (theme === 'dark') {
+            $icon.removeClass('fa-moon').addClass('fa-sun').css('color', 'yellow')
+            $('body').addClass('bg-neutral-800 text-white').removeClass('bg-slate-100 text-black')
+            $themeButton.attr('title', 'trocar para modo claro')
+        } else {
+            $icon.removeClass('fa-sun').addClass('fa-moon').css('color', 'blue')
+            $('body').addClass('bg-slate-100 text-black').removeClass('bg-neutral-800 text-white')
+            $themeButton.attr('title', 'trocar para modo escuro')
         }
     }
 
-    $('#add-task').on('click', addTask)
+    $('#add-task').on('click', function () {
+        const taskText = $('#task-input').val().trim()
+        if (taskText) {
+            addTask(taskText)
+            $('#task-input').val('')
+            saveTasks()
+        }
+    })
 
     $('#task-input').on('keypress', function (e) {
         if (e.which === 13) {
             e.preventDefault()
-            addTask()
+            const taskText = $(this).val().trim()
+            if (taskText) {
+                addTask(taskText)
+                $(this).val('')
+                saveTasks()
+            }
         }
     })
+
+    loadTasks()
+    loadTheme()
 
     const $footer = $('<footer></footer>')
         .addClass('text-center')
@@ -91,6 +144,7 @@ $(document).ready(function () {
     const $textFooter = $('<h1></h1>')
         .text('CODE BY ÉVERTON CORDEIRO')
         .addClass('text-center text-1xl text-blue-300 text-opacity-4')
-    
-    $('body').append($footer.append($textFooter))
+
+    $footer.append($textFooter)
+    $('body').append($footer)
 })
